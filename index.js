@@ -1,4 +1,17 @@
 const inquirer = require('inquirer');
+const mysql = require('mysql2');
+
+// Connect to database
+const db = mysql.createConnection(
+    {
+      host: 'localhost',
+      user: 'root',
+      password: 'Reishi99ga!',
+      database: 'company_db'
+    },
+    console.log(`Connected to the compay_db database.`)
+  );
+
 
 const questions = [
     {
@@ -51,7 +64,15 @@ function responder(input){
 
 // code to view all employees
 function viewAllEmployee() {
-    init()
+    const sql = `SELECT first_name FROM employees`;
+    db.query(sql, (err, rows) => {
+      if (err) {
+        console.log({ error: err.message });
+      }else{
+        console.table(rows)
+        init()
+        }
+    });
 }
 
 // code to add an employee
