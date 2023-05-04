@@ -20,25 +20,25 @@ const questions = [
 function responder(input){
     switch (input) {
         case 'View All Employees':
-            // code to view all employees
+            viewAllEmployee()
             break;
         case 'Add Employee':
-            // code to add an employee
+            addEmployee()
             break;
         case 'Update Employee Role':
-            // code to update an employee's role
+            updateEmployeeRole()
             break;
         case 'View All Roles':
-            // code to view all roles
+            viewAllRoles()
             break;
         case 'Add Role':
-            // code to add a role
+            addRole()
             break;
         case 'View All Departments':
-            // code to view all departments
+            viewAllDepartments()
             break;
         case 'Add Department':
-            // code to add a department
+            addDepartment()
             break;
         case 'Quit':
             console.log('Goodbye')
@@ -46,8 +46,43 @@ function responder(input){
         default:
             console.log('Invalid question');
             break;
-        }
     }
+}
+
+// code to view all employees
+function viewAllEmployee() {
+    init()
+}
+
+// code to add an employee
+function addEmployee(){
+    init()  
+}
+
+// code to update an employee's role
+function updateEmployeeRole(){
+    init()
+}
+
+// code to view all roles
+function viewAllRoles(){
+    init()
+}
+
+// code to add a role
+function addRole(){
+    init()
+}
+
+// code to view all departments
+function viewAllDepartments(){
+    init()
+}
+
+// code to add a department
+function addDepartment(){
+    init()
+}
 
 function init() {
     inquirer.prompt(questions)
