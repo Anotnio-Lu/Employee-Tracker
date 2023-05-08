@@ -64,7 +64,7 @@ function responder(input){
 
 // code to view all employees
 function viewAllEmployee() {
-    const sql = `SELECT first_name As NAME FROM employees`;
+    const sql = `SELECT * FROM employees`;
     db.query(sql, (err, rows) => {
       if (err) {
         console.log({ error: err.message });
@@ -87,6 +87,7 @@ function updateEmployeeRole(){
 
 // code to view all roles
 function viewAllRoles(){
+    const sql = `SELECT first_name As NAME FROM employees`;
     init()
 }
 
