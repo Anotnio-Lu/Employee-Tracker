@@ -87,8 +87,15 @@ function updateEmployeeRole(){
 
 // code to view all roles
 function viewAllRoles(){
-    const sql = `SELECT first_name As NAME FROM employees`;
-    init()
+    const sql = `SELECT * FROM roles`;
+    db.query(sql, (err, rows) => {
+      if (err) {
+        console.log({ error: err.message });
+      }else{
+        console.table(rows)
+        init()
+        }
+    });
 }
 
 // code to add a role
@@ -98,7 +105,15 @@ function addRole(){
 
 // code to view all departments
 function viewAllDepartments(){
-    init()
+    const sql = `SELECT * FROM departments`;
+    db.query(sql, (err, rows) => {
+      if (err) {
+        console.log({ error: err.message });
+      }else{
+        console.table(rows)
+        init()
+        }
+    });
 }
 
 // code to add a department
