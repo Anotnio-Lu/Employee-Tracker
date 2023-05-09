@@ -64,7 +64,12 @@ function responder(input){
 
 // code to view all employees
 function viewAllEmployee() {
-    const sql = `SELECT * FROM employees`;
+    const sql = `SELECT e.first_name, e.last_name, e.role_id, r.title, d.department_name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager
+    FROM employees e
+    JOIN roles r ON e.role_id = r.id
+    JOIN departments d ON r.department_id = d.id
+    LEFT JOIN employees m ON e.manager_id = m.id;
+    `;
     db.query(sql, (err, rows) => {
       if (err) {
         console.log({ error: err.message });
@@ -75,17 +80,6 @@ function viewAllEmployee() {
     });
 }
 
-// function databaseToArray(input, table){
-//   const sql = `SELECT ` + input + ` FROM ` + table;
-//   db.query(sql, (err, res) => {
-//     if (err) {
-//       console.log({ error: err.message });
-//     }else{
-//       const values = res.map(row => row.input);
-//       return values
-//       }
-//   });
-// }
 
 let rolesList
 let ManagersList
@@ -105,7 +99,7 @@ function databaseToArray(){
 }
 
 function managerToArray(){
-  const sql = `SELECT * FROM employees` ;
+  const sql = `SELECT * FROM employees`;
   db.query(sql, (err, res) => {
     if (err) {
       console.log({ error: err.message });
@@ -278,7 +272,11 @@ function updateEmployeeRole(){
 
 // code to view all roles
 function viewAllRoles(){
-    const sql = `SELECT * FROM roles`;
+    const sql = `SELECT r.id, r.title, d.department_name, r.salary
+    FROM roles r
+    JOIN departments d ON r.department_id = d.id
+    JOIN employees e ON r.id = e.role_id;
+    `;
     db.query(sql, (err, rows) => {
       if (err) {
         console.log({ error: err.message });
