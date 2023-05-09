@@ -91,7 +91,7 @@ function databaseToArray(){
     if (err) {
       console.log({ error: err.message });
     }else{
-      const values = res.map(row => row.title);
+      let values = res.map(row => row.title);
       let string = values.toString()
       rolesList = string.split(',');
       }
@@ -104,7 +104,7 @@ function managerToArray(){
     if (err) {
       console.log({ error: err.message });
     }else{
-      const values = res.map(row => row.first_name +' '+ row.last_name);
+      let values = res.map(row => row.first_name +' '+ row.last_name);
       let string = values.toString()
       ManagersList = string.split(',');
       }
@@ -117,7 +117,7 @@ function departmentToArray(){
     if (err) {
       console.log({ error: err.message });
     }else{
-      const values = res.map(row => row.department_name);
+      let values = res.map(row => row.department_name);
       let string = values.toString()
       departmentList = string.split(',');
       }
@@ -131,6 +131,7 @@ managerToArray()
 
 // code to add an employee
 function addEmployee(){
+    databaseToArray()
     inquirer.prompt([{
         type: "input",
         name: "employee_firstname",
@@ -272,6 +273,7 @@ function updateEmployeeRole(){
 
 // code to view all roles
 function viewAllRoles(){
+    databaseToArray()
     const sql = `SELECT r.id, r.title, d.department_name, r.salary
     FROM roles r
     JOIN departments d ON r.department_id = d.id
@@ -289,6 +291,7 @@ function viewAllRoles(){
 
 // code to add a role
 function addRole(){
+  departmentToArray()
   inquirer.prompt([{
     type: "input",
     name: "role_name",
