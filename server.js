@@ -130,6 +130,7 @@ function departmentToArray(){
   });
 }
 
+
 departmentToArray()
 databaseToArray()
 managerToArray()
@@ -228,7 +229,51 @@ function addEmployee(){
 
 // code to update an employee's role
 function updateEmployeeRole(){
-    init()
+  inquirer.prompt([
+    {
+        type: "list",
+        name: "employee",
+        message: "Which employee's role do you want to update?",
+        choices: ManagersList
+    },
+      {
+        type: "list",
+        name: "role",
+        message: "Which role do you want to assign the selected employee?",
+        choices: rolesList 
+      }
+    ])
+    .then((response) => {
+      const query = `SELECT id FROM roles WHERE title='${response.role}';`
+      const getRoleId = new Promise((resolve, reject) => {
+        db.query(query, (err, results) => {
+          if (err) {
+            reject(err);
+          } else {
+            const roleId = results[0].id;
+            resolve(roleId);
+          }
+        });
+      });
+      getRoleId.then(roleId => {
+          const sql = `UPDATE employees SET role_id ='${roleId}' WHERE first_name= '${response.employee.split(' ')[0]}';`
+          db.query(sql, (err, res) => {
+            if (err) {
+              console.log({ error: err.message });
+            }else{
+              console.log('Role updated!')
+              init()
+              }
+          })
+
+      }).catch(error => {
+        console.log({ error: error.message });
+      });
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+
 }
 
 // code to view all roles
