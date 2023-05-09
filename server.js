@@ -279,8 +279,6 @@ function addRole(){
   ])
   .then((response) => {
     var dArray = [response.role_name, response.salary]
-
-    const roleTitle = `${response.employee_role}`;
     const depatmentquery = `SELECT id FROM departments WHERE department_name='${response.department_role}';`
     const getdepartmentId = new Promise((resolve, reject) => {
     db.query(depatmentquery, (err, results) => {
@@ -328,7 +326,35 @@ function viewAllDepartments(){
 
 // code to add a department
 function addDepartment(){
-    init()
+    
+  inquirer.prompt([{
+    type: "input",
+    name: "name",
+    message: "What is the name of the department?",
+    validate: firstName => {
+      if (firstName) {
+        return true;
+      } else {
+        console.log('Please enter the department name.');
+        return false;
+      }}
+    }
+  ])
+  .then((response) => {
+    const sql = `INSERT INTO departments (department_name)
+    VALUES ('${response.name}');`
+    db.query(sql, (err, res) => {
+      if (err) {
+        console.log({ error: err.message });
+      }else{
+        console.log('Department added!')
+        init()
+        }
+    });
+  })
+  .catch((error) => {
+  console.log(error)
+  })
 }
 
 function init() {
