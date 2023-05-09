@@ -89,6 +89,7 @@ function viewAllEmployee() {
 
 let rolesList
 let ManagersList
+let departmentList
 
 function databaseToArray(){
   const sql = `SELECT * FROM roles` ;
@@ -116,6 +117,20 @@ function managerToArray(){
   });
 }
 
+function departmentToArray(){
+  const sql = `SELECT * FROM departments` ;
+  db.query(sql, (err, res) => {
+    if (err) {
+      console.log({ error: err.message });
+    }else{
+      const values = res.map(row => row.department_name);
+      let string = values.toString()
+      departmentList = string.split(',');
+      }
+  });
+}
+
+departmentToArray()
 databaseToArray()
 managerToArray()
 
@@ -231,7 +246,71 @@ function viewAllRoles(){
 
 // code to add a role
 function addRole(){
-    init()
+  inquirer.prompt([{
+    type: "input",
+    name: "role_name",
+    message: "What is the name of the role?",
+    validate: firstName => {
+      if (firstName) {
+        return true;
+      } else {
+        console.log('Please enter the role name.');
+        return false;
+      }}
+    },
+    {
+      type: "input",
+      name: "salary",
+      message: "What is the salary of the role?",
+      validate: name => {
+      if (name) {
+        return true;
+      } else {
+        console.log('Please enter the salary.');
+        return false;
+      }}
+    },
+    {
+      type: "list",
+      name: "department_role",
+      message: "Which department does the role belong to?",
+      choices: departmentList
+    }
+  ])
+  .then((response) => {
+    var dArray = [response.role_name, response.salary]
+
+    const roleTitle = `${response.employee_role}`;
+    const depatmentquery = `SELECT id FROM departments WHERE department_name='${response.department_role}';`
+    const getdepartmentId = new Promise((resolve, reject) => {
+    db.query(depatmentquery, (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        const departmentId = results[0].id;
+        resolve(departmentId);
+        
+      }
+  });
+  });
+    getdepartmentId.then(departmentId => {
+      const sql = `INSERT INTO roles (title, salary, department_id)
+      VALUES ('`+dArray[0]+`', '`+dArray[1]+`', `+departmentId+`);`
+      db.query(sql, (err, res) => {
+        if (err) {
+          console.log({ error: err.message });
+        }else{
+          console.log('Role added!')
+          init()
+          }
+      });
+    }).catch(error => {
+      console.log({ error: error.message });
+    });
+  })
+  .catch((error) => {
+  console.log(error)
+  })
 }
 
 // code to view all departments
