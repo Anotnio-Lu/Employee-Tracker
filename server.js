@@ -75,9 +75,140 @@ function viewAllEmployee() {
     });
 }
 
+// function databaseToArray(input, table){
+//   const sql = `SELECT ` + input + ` FROM ` + table;
+//   db.query(sql, (err, res) => {
+//     if (err) {
+//       console.log({ error: err.message });
+//     }else{
+//       const values = res.map(row => row.input);
+//       return values
+//       }
+//   });
+// }
+
+let rolesList
+let ManagersList
+
+function databaseToArray(){
+  const sql = `SELECT * FROM roles` ;
+  db.query(sql, (err, res) => {
+    if (err) {
+      console.log({ error: err.message });
+    }else{
+      const values = res.map(row => row.title);
+      let string = values.toString()
+      rolesList = string.split(',');
+      }
+  });
+}
+
+function managerToArray(){
+  const sql = `SELECT * FROM employees` ;
+  db.query(sql, (err, res) => {
+    if (err) {
+      console.log({ error: err.message });
+    }else{
+      const values = res.map(row => row.first_name +' '+ row.last_name);
+      let string = values.toString()
+      ManagersList = string.split(',');
+      }
+  });
+}
+
+databaseToArray()
+managerToArray()
+
 // code to add an employee
 function addEmployee(){
-    init()  
+    inquirer.prompt([{
+        type: "input",
+        name: "employee_firstname",
+        message: "Enter the employee's first name:",
+        validate: firstName => {
+          if (firstName) {
+            return true;
+          } else {
+            console.log('Please enter the first name of the employee.');
+            return false;
+          }}
+        },
+        {
+          type: "input",
+          name: "employee_lastname",
+          message: "Enter the employee's last name:",
+          validate: name => {
+            if (name) {
+              return true;
+            } else {
+              console.log('Please enter the last name of the employee.');
+              return false;
+            }}
+        },
+        {
+            type: "list",
+            name: "employee_role",
+            message: "What is the employee's role:",
+            choices: rolesList
+        },
+          {
+            type: "list",
+            name: "employee_name",
+            message: "Who is the employee's manager?",
+            choices: ManagersList
+          },
+
+        ])
+    .then((response) => {
+      var array = [response.employee_firstname, response.employee_lastname]
+
+      const roleTitle = `${response.employee_role}`;
+
+      const query = `SELECT id FROM roles WHERE title='${response.employee_role}';`
+      const getRoleId = new Promise((resolve, reject) => {
+        db.query(query, (err, results) => {
+          if (err) {
+            reject(err);
+          } else {
+            const roleId = results[0].id;
+            resolve(roleId);
+          }
+        });
+      });
+      getRoleId.then(roleId => {
+        let managersFirst = response.employee_name.split(' ');
+        const getManagerId = new Promise((resolve, reject) => {
+          const managerquery = `SELECT id FROM employees WHERE first_name='`+managersFirst[0]+`';`
+          db.query(managerquery, (err, results) => {
+            if (err) {
+              console.log({ error: err.message });
+            }else{
+              const managerId = results[0].id;
+              resolve(managerId);
+              }
+          })
+        })
+        getManagerId.then(res => {
+
+          const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id)
+          VALUES ('`+array[0]+`', '`+array[1]+`', `+roleId+`, `+res+`);`
+          db.query(sql, (err, res) => {
+            if (err) {
+              console.log({ error: err.message });
+            }else{
+              console.log('Employee added!')
+              init()
+              }
+          });
+        })
+
+      }).catch(error => {
+        console.log({ error: error.message });
+      });
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 }
 
 // code to update an employee's role
